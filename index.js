@@ -82,7 +82,7 @@ app.post('/races', (req, res) => {
   console.log('storedToken', storedToken)
  
   const toSend = {
-    id: uuidv4(),
+    raceId: uuidv4(),
     racerId: registrationData.racerId 
   }
 res.send(toSend)
