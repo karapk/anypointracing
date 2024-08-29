@@ -1,18 +1,17 @@
 const fs = require ('fs');
 
 function writeDb(updatedDb) {
-    fs.writeFileSync("./db.json", JSON.stringify(updatedDb, null, 2));
+    fs.writeFileSync("/tmp/db.json", JSON.stringify(updatedDb, null, 2));
 }
   
 function readDb() {
-    return JSON.parse(fs.readFileSync("./db.json"));
+    return JSON.parse(fs.readFileSync("/tmp/db.json"));
 }
 
 module.exports = {
 	storedToken: {
 		get: () => {
-			const dbData = JSON.parse(fs.readFileSync("./db.json"));
-			return dbData.token;
+			return readDb().token;
 		},
 		add: (newToken) => {
 			const newDb = {
