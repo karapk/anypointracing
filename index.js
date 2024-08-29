@@ -57,13 +57,15 @@ app.listen(PORT, () => {
 //       }
 //     });
 
-app.post('/races', (req, res) => {
-  const registrationData = {
-    displayName: "RoadRunner",
-    email: "kpk.my.mailings@gmail.com",
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
-    clientId: "24a648e789f94db79b650321722ad84a"
+const registrationData = {
+  displayName: "RoadRunner",
+  email: "kpk.my.mailings@gmail.com",
+  racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
+  clientId: "24a648e789f94db79b650321722ad84a"
 }
+
+app.post('/races', (req, res) => {
+ 
 
   console.log(registrationData.racerId )
 
@@ -88,7 +90,12 @@ res.send(toSend)
 
 app.post('/races/:id/laps', (req, res) => {
  console.log(req.params)
- res.status(200).send({ token: req.body.token })
+ const newToken = req.body.token
+ console.log(newToken)
+//  res.status(200).appendHeader({
+//     'Content-Type': 'text/plain'
+//  }).send(newToken)
+res.setHeader('Content-Type', 'text/plain').send(newToken)
 })
 
 
