@@ -88,7 +88,7 @@ res.send(toSend)
 
 app.post('/races/:id/laps', (req, res) => {
  console.log(req.params)
-
+ res.status(200).send({ token: req.body.token })
 })
 
 
