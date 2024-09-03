@@ -1,32 +1,29 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const { v4: uuidv4 } = require('uuid');
+const db = require('./db'); 
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-const myDb = {
-  races: new Map(),
-};
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-
+// Endpoint to start a race
 app.post('/races', (req, res) => {
-  const receivedToken = req.body.token; 
-  const raceId = uuidv4(); 
+  const receivedToken = req.body.token;
+  const raceId = uuidv4();
 
-  
-  myDb.races.set(raceId, [receivedToken]);
+
+  db.saveToken(raceId, receivedToken);
 
   const toSend = {
-    id: raceId, 
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
+    id: raceId,
+    racerId: "e38d46e2-6f32-4e4b-b64b-131cb7ffe0be", 
   };
 
   console.log('Race started:', toSend);
@@ -35,25 +32,24 @@ app.post('/races', (req, res) => {
 
 
 app.post('/races/:id/laps', (req, res) => {
-  const raceId = req.params.id; 
-  const receivedToken = req.body.token; 
+  const raceId = req.params.id;
+  const receivedToken = req.body.token;
 
-  if (!myDb.races.has(raceId)) {
+  const tokens = db.getTokens(raceId);
+
+  if (tokens.length === 0) {
     return res.status(404).json({ error: 'Race ID not found' });
   }
 
-
-  const tokens = myDb.races.get(raceId);
+  
+  const tokenToReturn = tokens[tokens.length - 1];
 
   
-  const tokenToReturn = tokens[tokens.length - 1]; 
+  db.saveToken(raceId, receivedToken);
 
-  
-  tokens.push(receivedToken); 
-  myDb.races.set(raceId, tokens); 
   const toSend = {
     token: tokenToReturn,
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
+    racerId: "e38d46e2-6f32-4e4b-b64b-131cb7ffe0be", 
   };
 
   console.log('Lap completed:', toSend);

@@ -1,46 +1,44 @@
-const fs = require ('fs');
+const fs = require('fs');
+const path = require('path');
 
-function writeDb(updatedDb) {
-    fs.writeFileSync("/tmp/db.json", JSON.stringify(updatedDb, null, 2));
-}
-  
+const dbPath = path.join(__dirname, 'db.json');
+
+
 function readDb() {
-    return JSON.parse(fs.readFileSync("/tmp/db.json"));
+  try {
+    const data = fs.readFileSync(dbPath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading the database:', error);
+    return {};
+  }
+}
+
+
+function writeDb(data) {
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error) {
+    console.error('Error writing to the database:', error);
+  }
+}
+
+
+function getTokens(raceId) {
+  const db = readDb();
+  return db[raceId] || [];
+}
+
+function saveToken(raceId, token) {
+  const db = readDb();
+  if (!db[raceId]) {
+    db[raceId] = [];
+  }
+  db[raceId].push(token);
+  writeDb(db);
 }
 
 module.exports = {
-	storedToken: {
-		get: () => {
-			return readDb().token;
-		},
-		add: (newToken) => {
-			const newDb = {
-				token: newToken
-			}
-
-			writeDb(newDb)
-		}
-	}
-}
-
-const storedToken = {
-	name: 'foo',
-	releaseKraken: () => {
-		console.log('krakenreleased')
-	}
-}
-
-// const ourData = {
-// 	name: 'Foo mc foo',
-// 	age: 55,
-// 	school: 'playway'
-// }
-
-// fs.writeFileSync("./foo.json", JSON.stringify(ourData, null, 2));
-
-//     const foo = JSON.parse(fs.readFileSync("./foo.json"));
-// 	console.log(foo.school)
-
-// const theToken = db.token.get()
-// console.log(theToken)
-
+  getTokens,
+  saveToken,
+};
