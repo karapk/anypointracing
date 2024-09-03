@@ -20,6 +20,15 @@ app.listen(PORT, () => {
 
 app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
+  
+  for (const [raceId, tokens] of myDb.races.entries()) {
+    if (tokens.length > 0 && tokens[0] === undefined) {
+      // If a race is already started but doesn't have any valid token yet, use this race
+      console.log(`Reusing existing race: ${raceId}`);
+      return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
+    }
+  }
+  
   const raceId = uuidv4();
 
 
