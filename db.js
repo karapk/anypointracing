@@ -1,44 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+// db.js
+const races = new Map(); 
 
-const dbPath = path.join(__dirname, 'db.json');
-
-
-function readDb() {
-  try {
-    const data = fs.readFileSync(dbPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading the database:', error);
-    return {};
-  }
-}
-
-
-function writeDb(data) {
-  try {
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
-    console.error('Error writing to the database:', error);
-  }
-}
-
-
-function getTokens(raceId) {
-  const db = readDb();
-  return db[raceId] || [];
-}
 
 function saveToken(raceId, token) {
-  const db = readDb();
-  if (!db[raceId]) {
-    db[raceId] = [];
+  if (!races.has(raceId)) {
+    races.set(raceId, []);
   }
-  db[raceId].push(token);
-  writeDb(db);
+  races.get(raceId).push(token);
 }
 
-module.exports = {
-  getTokens,
-  saveToken,
-};
+// Retrieve tokens for a specific race ID
+function getTokens(raceId) {
+  return races.get(raceId) || [];
+}
+
+module.exports = { saveToken, getTokens };
