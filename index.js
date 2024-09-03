@@ -13,7 +13,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Endpoint to start a race
+
 app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   const raceId = uuidv4();
