@@ -1,17 +1,46 @@
-// db.js
-const races = new Map(); 
+const fs = require ('fs');
 
-
-function saveToken(raceId, token) {
-  if (!races.has(raceId)) {
-    races.set(raceId, []);
-  }
-  races.get(raceId).push(token);
+function writeDb(updatedDb) {
+    fs.writeFileSync("/tmp/db.json", JSON.stringify(updatedDb, null, 2));
+}
+  
+function readDb() {
+    return JSON.parse(fs.readFileSync("/tmp/db.json"));
 }
 
-// Retrieve tokens for a specific race ID
-function getTokens(raceId) {
-  return races.get(raceId) || [];
+module.exports = {
+	storedToken: {
+		get: () => {
+			return readDb().token;
+		},
+		add: (newToken) => {
+			const newDb = {
+				token: newToken
+			}
+
+			writeDb(newDb)
+		}
+	}
 }
 
-module.exports = { saveToken, getTokens };
+const storedToken = {
+	name: 'foo',
+	releaseKraken: () => {
+		console.log('krakenreleased')
+	}
+}
+
+// const ourData = {
+// 	name: 'Foo mc foo',
+// 	age: 55,
+// 	school: 'playway'
+// }
+
+// fs.writeFileSync("./foo.json", JSON.stringify(ourData, null, 2));
+
+//     const foo = JSON.parse(fs.readFileSync("./foo.json"));
+// 	console.log(foo.school)
+
+// const theToken = db.token.get()
+// console.log(theToken)
+
