@@ -41,11 +41,17 @@ app.post('/races/:id/laps', (req, res) => {
 
 
   if (!myDb.races.has(raceId)) {
+    console.log(`Race ID ${raceId} not found.`);
     return res.status(404).json({ error: 'Race ID not found' });
   }
 
   
   const tokens = myDb.races.get(raceId);
+
+  if (!tokens || tokens.length === 0) {
+    console.log(`No tokens found for Race ID ${raceId}.`);
+    return res.status(404).json({ error: 'No tokens found for this race' });
+  }
 
  
   const tokenToReturn = tokens[tokens.length - 1];
@@ -60,13 +66,14 @@ app.post('/races/:id/laps', (req, res) => {
   myDb.races.set(raceId, tokens);
 
   const toSend = {
-    token: receivedToken,
+    token: tokenToReturn,
     racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
   };
 
   console.log('Lap completed:', toSend);
   res.json(toSend);
 });
+
 app.get('/', (req, res) => { 
   res.send('Welcome to Anypoint racing! 🚗💨');
  });
