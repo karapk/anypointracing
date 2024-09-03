@@ -22,7 +22,7 @@ app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   const raceId = uuidv4();
 
- 
+
   myDb.races.set(raceId, [receivedToken]);
 
   const toSend = {
@@ -39,7 +39,7 @@ app.post('/races/:id/laps', (req, res) => {
   const raceId = req.params.id;
   const receivedToken = req.body.token;
 
-  
+
   if (!myDb.races.has(raceId)) {
     return res.status(404).json({ error: 'Race ID not found' });
   }
@@ -49,6 +49,11 @@ app.post('/races/:id/laps', (req, res) => {
 
  
   const tokenToReturn = tokens[tokens.length - 1];
+
+
+  if (!tokenToReturn) {
+    return res.status(400).json({ error: 'No valid token to return' });
+  }
 
 
   tokens.push(receivedToken);
@@ -62,3 +67,9 @@ app.post('/races/:id/laps', (req, res) => {
   console.log('Lap completed:', toSend);
   res.json(toSend);
 });
+app.get('/', (req, res) => { 
+  res.send('Welcome to Anypoint racing! 🚗💨');
+ });
+
+
+module.exports = app;
