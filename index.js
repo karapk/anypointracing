@@ -23,7 +23,7 @@ app.post('/races', (req, res) => {
 
   const toSend = {
     id: raceId,
-    racerId: "e38d46e2-6f32-4e4b-b64b-131cb7ffe0be", 
+    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
   };
 
   console.log('Race started:', toSend);
@@ -44,12 +44,12 @@ app.post('/races/:id/laps', (req, res) => {
   
   const tokenToReturn = tokens[tokens.length - 1];
 
-  
+
   db.saveToken(raceId, receivedToken);
 
   const toSend = {
     token: tokenToReturn,
-    racerId: "e38d46e2-6f32-4e4b-b64b-131cb7ffe0be", 
+    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
   };
 
   console.log('Lap completed:', toSend);
