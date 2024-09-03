@@ -12,17 +12,22 @@ const myDb = {
   races: new Map(),
 };
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 app.post('/races', (req, res) => {
-  const receivedToken = req.body.token; 
-  const raceId = uuidv4(); 
+  const receivedToken = req.body.token;
+  const raceId = uuidv4();
 
-  
+ 
   myDb.races.set(raceId, [receivedToken]);
 
   const toSend = {
-    id: raceId, 
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
+    id: raceId,
+    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
   };
 
   console.log('Race started:', toSend);
@@ -31,35 +36,29 @@ app.post('/races', (req, res) => {
 
 
 app.post('/races/:id/laps', (req, res) => {
-  const raceId = req.params.id; 
-  const receivedToken = req.body.token; 
+  const raceId = req.params.id;
+  const receivedToken = req.body.token;
 
-
+  
   if (!myDb.races.has(raceId)) {
     return res.status(404).json({ error: 'Race ID not found' });
   }
 
+  
   const tokens = myDb.races.get(raceId);
 
-
-  const tokenToReturn = tokens[tokens.length - 1]; 
-
  
-  tokens.push(receivedToken); 
-  myDb.races.set(raceId, tokens); 
+  const tokenToReturn = tokens[tokens.length - 1];
+
+
+  tokens.push(receivedToken);
+  myDb.races.set(raceId, tokens);
 
   const toSend = {
-    token: tokenToReturn, 
+    token: tokenToReturn,
     racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
   };
 
   console.log('Lap completed:', toSend);
   res.json(toSend);
 });
-
-app.get('/', (req, res) => { 
-  res.send('Welcome to Anypoint racing! 🚗💨');
- });
-
-
-module.exports = app;
