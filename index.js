@@ -12,7 +12,7 @@ const myDb = {
   races: new Map(),
 };
 
-let currentActiveRaceId = null;
+// let currentActiveRaceId = null;
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
@@ -25,10 +25,10 @@ app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   console.log('Received token:', receivedToken);
   
-  if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
-    console.log(`Reusing existing race: ${currentActiveRaceId}`);
-    return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-  }
+  // if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
+  //   console.log(`Reusing existing race: ${currentActiveRaceId}`);
+  //   return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
+  // }
   // for (const [raceId, tokens] of myDb.races.entries()) {
   //   if (tokens.length > 0 && tokens[0] === undefined) {
   //     // If a race is already started but doesn't have any valid token yet, use this race
@@ -39,8 +39,8 @@ app.post('/races', (req, res) => {
   
   //starting a new race if no active race is found
   const raceId = uuidv4();
-  myDb.races.set(raceId, [receivedToken]);
-  currentActiveRaceId = raceId;
+  myDb.races.set(raceId, receivedToken);
+  // currentActiveRaceId = raceId;
 
   const toSend = {
     id: raceId,
@@ -48,6 +48,7 @@ app.post('/races', (req, res) => {
   };
 
   console.log('Race started:', toSend);
+  console.log('myDb', myDb)
   res.json(toSend);
 });
 
@@ -56,8 +57,8 @@ app.post('/races/:id/laps', (req, res) => {
   console.log('Lap completion', req.body);
   const raceId = req.params.id;
   console.log('req.params', req.params)
-  const receivedToken = req.body.token;
-  console.log('receivedToken', receivedToken)
+  // const receivedToken = req.body.token;
+  // console.log('receivedToken', receivedToken)
 
   console.log('myDb', myDb)
   if (!myDb.races.has(raceId)) {
@@ -66,19 +67,22 @@ app.post('/races/:id/laps', (req, res) => {
   }
 
   
-  const tokens = myDb.races.get(raceId);
+  const token = myDb.races.get(raceId);
 
-  if (!tokens || tokens.length === 0) {
+  if (!token) {
     console.log(`No tokens found for Race ID ${raceId}.`);
+    // myDb.races.set(raceId, []);
     return res.status(404).json({ error: 'No tokens found for this race' });
+
   }
 
-  tokens.push(receivedToken);
-  myDb.races.set(raceId, tokens);
+  // tokens.push(receivedToken);
+  // myDb.races.set(raceId, tokens);
 
-  const tokenToReturn = tokens[tokens.length - 2];
+  const tokenToReturn = token;
 
   if (!tokenToReturn) {
+    console.log('no token to return')
     return res.status(400).json({ error: 'No valid token to return' });
   }
 
