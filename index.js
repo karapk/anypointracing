@@ -59,7 +59,7 @@ app.post('/races/:id/laps', (req, res) => {
   const receivedToken = req.body.token;
   console.log('receivedToken', receivedToken)
 
-console.log('myDB', myDB)
+  console.log('myDb', myDb)
   if (!myDb.races.has(raceId)) {
     console.log(`Race ID ${raceId} not found.`);
     return res.status(404).json({ error: 'Race ID not found' });
