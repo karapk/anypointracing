@@ -12,6 +12,8 @@ const myDb = {
   races: new Map(),
 };
 
+let currentActiveRaceId = null;
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -21,18 +23,21 @@ app.listen(PORT, () => {
 app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   
-  for (const [raceId, tokens] of myDb.races.entries()) {
-    if (tokens.length > 0 && tokens[0] === undefined) {
-      // If a race is already started but doesn't have any valid token yet, use this race
-      console.log(`Reusing existing race: ${raceId}`);
-      return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-    }
+  if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
+    console.log(`Reusing existing race: ${currentActiveRaceId}`);
+    return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
   }
+  // for (const [raceId, tokens] of myDb.races.entries()) {
+  //   if (tokens.length > 0 && tokens[0] === undefined) {
+  //     // If a race is already started but doesn't have any valid token yet, use this race
+  //     console.log(`Reusing existing race: ${raceId}`);
+  //     return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
+  //   }
+  // }
   
   const raceId = uuidv4();
-
-
   myDb.races.set(raceId, [receivedToken]);
+  currentActiveRaceId = raceId;
 
   const toSend = {
     id: raceId,
@@ -62,17 +67,14 @@ app.post('/races/:id/laps', (req, res) => {
     return res.status(404).json({ error: 'No tokens found for this race' });
   }
 
- 
-  const tokenToReturn = tokens[tokens.length - 1];
+  tokens.push(receivedToken);
+  myDb.races.set(raceId, tokens);
 
+  const tokenToReturn = tokens[tokens.length - 1];
 
   if (!tokenToReturn) {
     return res.status(400).json({ error: 'No valid token to return' });
   }
-
-
-  tokens.push(receivedToken);
-  myDb.races.set(raceId, tokens);
 
   const toSend = {
     token: tokenToReturn,
