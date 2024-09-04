@@ -19,7 +19,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-
+//starting a new race endpoint
 app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   
@@ -35,6 +35,7 @@ app.post('/races', (req, res) => {
   //   }
   // }
   
+  //starting a new race if no active race is found
   const raceId = uuidv4();
   myDb.races.set(raceId, [receivedToken]);
   currentActiveRaceId = raceId;
@@ -48,7 +49,7 @@ app.post('/races', (req, res) => {
   res.json(toSend);
 });
 
-
+//lap completion endpoint
 app.post('/races/:id/laps', (req, res) => {
   const raceId = req.params.id;
   const receivedToken = req.body.token;
@@ -70,7 +71,7 @@ app.post('/races/:id/laps', (req, res) => {
   tokens.push(receivedToken);
   myDb.races.set(raceId, tokens);
 
-  const tokenToReturn = tokens[tokens.length - 1];
+  const tokenToReturn = tokens[tokens.length - 2];
 
   if (!tokenToReturn) {
     return res.status(400).json({ error: 'No valid token to return' });
