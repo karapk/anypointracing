@@ -39,7 +39,13 @@ app.post('/races', (req, res) => {
   
   //starting a new race if no active race is found
   const raceId = uuidv4();
-  myDb.races.set(raceId, receivedToken);
+  const newTokenInfo = {
+  
+      isNewLap: true,
+      currentVal: receivedToken,
+    
+  }
+  myDb.races.set(raceId, newTokenInfo);
   // currentActiveRaceId = raceId;
 
   const toSend = {
@@ -59,7 +65,7 @@ app.post('/races/:id/laps', (req, res) => {
   console.log('req.params', req.params)
   // const receivedToken = req.body.token;
   // console.log('receivedToken', receivedToken)
-
+ 
   console.log('myDb', myDb)
   if (!myDb.races.has(raceId)) {
     console.log(`Race ID ${raceId} not found.`);
@@ -67,19 +73,28 @@ app.post('/races/:id/laps', (req, res) => {
   }
 
   
-  const token = myDb.races.get(raceId);
+  const tokenInfo = myDb.races.get(raceId);
 
-  if (!token) {
-    console.log(`No tokens found for Race ID ${raceId}.`);
-    // myDb.races.set(raceId, []);
-    return res.status(404).json({ error: 'No tokens found for this race' });
-
+  const newTokenInfo = {
+      isNewLap: false,
+      currentVal: tokenInfo.currentVal,
   }
+
+  myDb.races.set(raceId, newTokenInfo);
+
+  // if (!token) {
+  //   console.log(`No tokens found for Race ID ${raceId}.`);
+  //   // myDb.races.set(raceId, []);
+  //   return res.status(404).json({ error: 'No tokens found for this race' });
+
+  // }
 
   // tokens.push(receivedToken);
   // myDb.races.set(raceId, tokens);
-
-  const tokenToReturn = token;
+  if (tokenInfo.isNewLap) {
+    return res.json({})
+  }
+  const tokenToReturn = newTokenInfo.currentVal;
 
   if (!tokenToReturn) {
     console.log('no token to return')
