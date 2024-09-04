@@ -81,6 +81,7 @@ app.post('/races/:id/laps', (req, res) => {
   }
 
   myDb.races.set(raceId, newTokenInfo);
+  console.log('myDb', myDb)
 
   // if (!token) {
   //   console.log(`No tokens found for Race ID ${raceId}.`);
@@ -92,7 +93,9 @@ app.post('/races/:id/laps', (req, res) => {
   // tokens.push(receivedToken);
   // myDb.races.set(raceId, tokens);
   if (tokenInfo.isNewLap) {
-    return res.json({})
+    return res.json({
+      racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36"
+    })
   }
   const tokenToReturn = newTokenInfo.currentVal;
 
