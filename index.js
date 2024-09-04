@@ -21,7 +21,9 @@ app.listen(PORT, () => {
 
 //starting a new race endpoint
 app.post('/races', (req, res) => {
+  console.log('Starting', req.body);
   const receivedToken = req.body.token;
+  console.log('Received token:', receivedToken);
   
   if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
     console.log(`Reusing existing race: ${currentActiveRaceId}`);
@@ -51,10 +53,13 @@ app.post('/races', (req, res) => {
 
 //lap completion endpoint
 app.post('/races/:id/laps', (req, res) => {
+  console.log('Lap completion', req.body);
   const raceId = req.params.id;
+  console.log('req.params', req.params)
   const receivedToken = req.body.token;
+  console.log('receivedToken', receivedToken)
 
-
+console.log('myDB', myDB)
   if (!myDb.races.has(raceId)) {
     console.log(`Race ID ${raceId} not found.`);
     return res.status(404).json({ error: 'Race ID not found' });
