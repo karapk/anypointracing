@@ -37,21 +37,31 @@ app.post('/races', (req, res) => {
   //   }
   // }
   
+  const existingRaceId = myDb.races.get('currentRace')
   //starting a new race if no active race is found
-  const raceId = uuidv4();
-  const newTokenInfo = {
-  
-      isNewLap: true,
-      currentVal: receivedToken,
-    
+  if (!existingRaceId) {
+    console.log(`Race ID ${raceId} not found.`);
+    const raceId = uuidv4();
+    myDb.races.set("currentRace", {
+      raceId: raceId,
+      currentToken: receivedToken
+    });
+    const toSend = {
+      id: raceId,
+      racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
+    };
+    return res.status(200).json(toSend);
   }
-  myDb.races.set(raceId, newTokenInfo);
-  // currentActiveRaceId = raceId;
 
+  myDb.races.set("currentRace", {
+    raceId: existingRaceId,
+    currentToken: receivedToken
+  });
   const toSend = {
     id: raceId,
     racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
   };
+
 
   console.log('Race started:', toSend);
   console.log('myDb', myDb)
