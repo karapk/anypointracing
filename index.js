@@ -68,7 +68,7 @@ app.post('/races/:id/laps', (req, res) => {
   myDb.races.set(raceId, tokens);
 
   
-  const previousToken = tokens[tokens.length - 2];
+  const previousToken = tokens[tokens.length - 1];
 
   if (!previousToken) {
     return res.status(400).json({ error: 'No valid token to return' });
