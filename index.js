@@ -6,6 +6,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.text()); 
 
 const myDb = {
   races: new Map(),
@@ -47,7 +48,7 @@ app.post('/races', (req, res) => {
 app.post('/races/:id/laps', (req, res) => {
   const raceId = req.params.id;
   console.log('raceId:', raceId);
-  const receivedToken = req.body.token;
+  const receivedToken = req.body;
   console.log('Received token/laps:', receivedToken);
 
   if (!myDb.races.has(raceId)) {
