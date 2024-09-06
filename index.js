@@ -7,109 +7,85 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-
 const myDb = {
   races: new Map(),
 };
 
-// let currentActiveRaceId = null;
+let currentActiveRaceId = null;
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-//starting a new race endpoint
+
 app.post('/races', (req, res) => {
-  console.log('Starting', req.body);
+  console.log('Received request:', req.body);
   const receivedToken = req.body.token;
-  
-  for (const [raceId, tokens] of myDb.races.entries()) {
-    if (tokens.length > 0 && tokens[0] === undefined) {
-      // If a race is already started but doesn't have any valid token yet, use this race
-      console.log(`Reusing existing race: ${raceId}`);
-      return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-    }
+  console.log('Received token:', receivedToken);
+  // Check if there is an existing active race
+  if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
+    console.log(`Reusing existing race: ${currentActiveRaceId}`);
+    return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
   }
-  
+
+  // If no active race, start a new race
   const raceId = uuidv4();
-  const newTokenInfo = {
-  
-      isNewLap: true,
-      currentVal: receivedToken,
-    
-  }
-  myDb.races.set(raceId, newTokenInfo);
-  // currentActiveRaceId = raceId;
+  myDb.races.set(raceId, [receivedToken]); // Initialize with the starting token
+  currentActiveRaceId = raceId;  // Update the current active race ID
 
   const toSend = {
     id: raceId,
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", // Hardcoded for now
+    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
   };
 
   console.log('Race started:', toSend);
-  console.log('myDb', myDb)
   res.json(toSend);
 });
 
-//lap completion endpoint
+// Endpoint to handle lap completion
 app.post('/races/:id/laps', (req, res) => {
-  console.log('Lap completion', req.body);
   const raceId = req.params.id;
-  console.log('req.params', req.params)
-  // const receivedToken = req.body.token;
-  // console.log('receivedToken', receivedToken)
- 
-  console.log('myDb', myDb)
+  console.log('raceId:', raceId);
+  const receivedToken = req.body.token;
+  console.log('Received token:', receivedToken);
+
   if (!myDb.races.has(raceId)) {
     console.log(`Race ID ${raceId} not found.`);
     return res.status(404).json({ error: 'Race ID not found' });
   }
 
+  const tokens = myDb.races.get(raceId);
+  console.log('Tokens:', tokens);
+
+  if (!tokens || tokens.length === 0) {
+    console.log(`No tokens found for Race ID ${raceId}.`);
+    return res.status(404).json({ error: 'No tokens found for this race' });
+  }
+
+
+  tokens.push(receivedToken);
+  myDb.races.set(raceId, tokens);
+
   
-  const tokenInfo = myDb.races.get(raceId);
+  const previousToken = tokens[tokens.length - 2];
 
-  const newTokenInfo = {
-      isNewLap: false,
-      currentVal: tokenInfo.currentVal,
-  }
-
-  myDb.races.set(raceId, newTokenInfo);
-  console.log('myDb', myDb)
-
-  // if (!token) {
-  //   console.log(`No tokens found for Race ID ${raceId}.`);
-  //   // myDb.races.set(raceId, []);
-  //   return res.status(404).json({ error: 'No tokens found for this race' });
-
-  // }
-
-  // tokens.push(receivedToken);
-  // myDb.races.set(raceId, tokens);
-  if (tokenInfo.isNewLap) {
-    return res.json({
-      racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36"
-    })
-  }
-  const tokenToReturn = newTokenInfo.currentVal;
-
-  if (!tokenToReturn) {
-    console.log('no token to return')
+  if (!previousToken) {
     return res.status(400).json({ error: 'No valid token to return' });
   }
 
   const toSend = {
-    token: tokenToReturn,
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36", 
+    token: previousToken,
+    // racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
   };
 
   console.log('Lap completed:', toSend);
   res.json(toSend);
 });
 
+// Welcome endpoint
 app.get('/', (req, res) => { 
   res.send('Welcome to Anypoint racing! 🚗💨');
- });
-
+});
 
 module.exports = app;
