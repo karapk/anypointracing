@@ -11,7 +11,7 @@ const myDb = {
   races: new Map(),
 };
 
-let currentActiveRaceId = null;
+// let currentActiveRaceId = null;
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
@@ -24,10 +24,10 @@ app.post('/races', (req, res) => {
   const receivedToken = req.body.token;
   console.log('Received token:', receivedToken);
   // Check if there is an existing active race
-  if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
-    console.log(`Reusing existing race: ${currentActiveRaceId}`);
-    return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-  }
+  // if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
+  //   console.log(`Reusing existing race: ${currentActiveRaceId}`);
+  //   return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
+  // }
 
   // If no active race, start a new race
   const raceId = uuidv4();
@@ -75,8 +75,8 @@ app.post('/races/:id/laps', (req, res) => {
   }
 
   const toSend = {
-    previousToken,
-    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
+    token: previousToken,
+    // racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
   };
 
   console.log('Lap completed:', toSend);
