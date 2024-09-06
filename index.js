@@ -68,15 +68,15 @@ app.post('/races/:id/laps', (req, res) => {
   myDb.races.set(raceId, tokens);
 
   
-  const previousToken = tokens[tokens.length - 1];
+  const previousToken = tokens[tokens.length - 2];
 
   if (!previousToken) {
     return res.status(400).json({ error: 'No valid token to return' });
   }
 
   const toSend = {
-    token: previousToken,
-    // racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
+    previousToken,
+    racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36",
   };
 
   console.log('Lap completed:', toSend);
