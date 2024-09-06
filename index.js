@@ -23,21 +23,15 @@ app.listen(PORT, () => {
 app.post('/races', (req, res) => {
   console.log('Starting', req.body);
   const receivedToken = req.body.token;
-  console.log('Received token:', receivedToken);
   
-  // if (currentActiveRaceId && myDb.races.has(currentActiveRaceId)) {
-  //   console.log(`Reusing existing race: ${currentActiveRaceId}`);
-  //   return res.json({ id: currentActiveRaceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-  // }
-  // for (const [raceId, tokens] of myDb.races.entries()) {
-  //   if (tokens.length > 0 && tokens[0] === undefined) {
-  //     // If a race is already started but doesn't have any valid token yet, use this race
-  //     console.log(`Reusing existing race: ${raceId}`);
-  //     return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
-  //   }
-  // }
+  for (const [raceId, tokens] of myDb.races.entries()) {
+    if (tokens.length > 0 && tokens[0] === undefined) {
+      // If a race is already started but doesn't have any valid token yet, use this race
+      console.log(`Reusing existing race: ${raceId}`);
+      return res.json({ id: raceId, racerId: "2532c7d5-511b-466a-a8b7-bb6c797efa36" });
+    }
+  }
   
-  //starting a new race if no active race is found
   const raceId = uuidv4();
   const newTokenInfo = {
   
